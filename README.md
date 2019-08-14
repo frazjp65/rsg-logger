@@ -14,7 +14,7 @@ monolog:
             action_level: error
             passthru_level: info
             handler: nested
-            formatter: json_formatter 
+            formatter: monolog.formatter
 ```
 
 and the services.yml:
