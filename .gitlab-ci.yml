@@ -1,0 +1,31 @@
+image: lovullo/php-ci
+
+include:
+    - 'http://devops.pages.lovullo.com/shared-pipelines/jobs-common.yml'
+    - 'http://devops.pages.lovullo.com/shared-pipelines/jobs-composer-install.yml'
+    - 'http://devops.pages.lovullo.com/shared-pipelines/jobs-php-static-analysis.yml'
+
+variables:
+    # Ignores/excludes for static analysis checks
+    phpcs_ignore: 'app/,bin/,vendor/,test/,web/,var'
+    phpmd_ignore: 'app,bin,vendor,test,web,var'
+    phpcpd_ignore: '--exclude vendor
+                    --exclude app
+                    --exclude web
+                    --exclude tests
+                    --exclude bin
+                    --exclude var'
+
+stages:
+    - build
+    - test
+    - deploy
+    - post-deploy
+
+before_script:
+    # Start ssh-agent, so we can clone dependencies
+    - eval $(ssh-agent -s)
+
+    # Add the SSH key which has access to clone dependencies
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+
