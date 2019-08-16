@@ -102,4 +102,44 @@ class StandardProcessorTest
         $this->assertArrayHasKey( 'severity', $record );
         $this->assertEquals( $severity, $record[ 'severity' ] );
     }
+
+
+    /**
+     * @depends testConstructor
+     */
+    public function testRecordHandlesTimestamp( Sut $sut )
+    {
+        $datetime = new \DateTimeImmutable( '2019-01-01', new \DateTimeZone( "EDT" ) );
+        $record   = $sut( [ 'datetime' => $datetime ] );
+        $this->assertArrayNotHasKey( 'datetime', $record );
+        $this->assertArrayHasKey( 'timestamp', $record );
+        $this->assertIsString( $record[ 'timestamp' ] );
+        $this->assertEquals( '2019-01-01T00:00:00.000000-0500', $record[ 'timestamp' ] );
+    }
+
+
+    /**
+     * @depends testConstructor
+     */
+    public function testRecordHandlesTimestampWhenNotDateTime( Sut $sut )
+    {
+        $datetime = '2019-08-16';
+        $record   = $sut( [ 'datetime' => $datetime ] );
+        $this->assertArrayNotHasKey( 'datetime', $record );
+        $this->assertArrayHasKey( 'timestamp', $record );
+        $this->assertIsString( $record[ 'timestamp' ] );
+        $this->assertEquals( $datetime, $record[ 'timestamp' ] );
+    }
+
+
+    public function testCustomDatetimeFormatter()
+    {
+        $sut = new Sut( $this->_env, $this->_service, 'c' );
+        $datetime = new \DateTimeImmutable( '2019-01-01', new \DateTimeZone( "EDT" ) );
+        $record   = $sut( [ 'datetime' => $datetime ] );
+        $this->assertArrayNotHasKey( 'datetime', $record );
+        $this->assertArrayHasKey( 'timestamp', $record );
+        $this->assertIsString( $record[ 'timestamp' ] );
+        $this->assertEquals( '2019-01-01T00:00:00-05:00', $record[ 'timestamp' ] );
+    }
 }
