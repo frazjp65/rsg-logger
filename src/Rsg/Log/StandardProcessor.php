@@ -32,17 +32,31 @@ final class StandardProcessor
      */
     private $_service;
 
+    /**
+     * _datetime_format
+     *
+     * @var string
+     */
+    private $_datetime_format;
+
 
     /**
      * Create a new log processor
      *
      * @param string $environment
      * @param string $service
+     * @param string $datetime_format The format to be used for timestamps,
+     *                                defaults to ISO8601 with microseconds
      */
-    public function __construct( $environment, $service )
+    public function __construct(
+        $environment,
+        $service,
+        $datetime_format = 'Y-m-d\TH:i:s.uO'
+    )
     {
-        $this->_environment = $environment;
-        $this->_service     = $service;
+        $this->_environment     = $environment;
+        $this->_service         = $service;
+        $this->_datetime_format = $datetime_format;
     }
 
 
@@ -57,12 +71,48 @@ final class StandardProcessor
             'service' => $this->_service,
         ];
 
+        $record = $this->_handleSeverity( $record );
+        $record = $this->_handleDatetime( $record );
+
+        return $record + $altered_record;
+    }
+
+
+    /**
+     * Update the "log_level" to be "severity"
+     *
+     * @param array $record
+     * @return array The updated record
+     */
+    private function _handleSeverity( array $record )
+    {
         if ( isset( $record[ 'level_name' ] ) )
         {
             $record[ 'severity' ] = $record[ 'level_name' ];
             unset( $record[ 'level_name' ] );
         }
 
-        return $record + $altered_record;
+        return $record;
+    }
+
+
+    /**
+     * Update the "timestamp"
+     *
+     * @param array $record
+     * @return array The updated record
+     */
+    private function _handleDatetime( array $record )
+    {
+        if ( isset( $record[ 'datetime' ] ) )
+        {
+            $record[ 'timestamp' ] = ( $record[ 'datetime' ] instanceof \DateTimeInterface )
+                ? $record[ 'datetime' ]->format( $this->_datetime_format )
+                : $record[ 'datetime' ];
+
+            unset( $record[ 'datetime' ] );
+        }
+
+        return $record;
     }
 }
