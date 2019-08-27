@@ -5,9 +5,9 @@ namespace Rsg\Log;
 use \Monolog\Processor\WebProcessor as BaseProcessor;
 
 /**
- * Class: WebProcessor
+ * Processor to add logging for web requests.
  *
- * Add logging for web requests. This extends `\Monolog\Processor\WebProcessor`
+ * This extends `\Monolog\Processor\WebProcessor`
  * and decorates another `\Rsg\Log\Processor`.
  *
  * @final

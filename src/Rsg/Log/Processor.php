@@ -3,7 +3,7 @@
 namespace Rsg\Log;
 
 /**
- * Interface: Processor
+ * Interface for RSG log Processors.
  *
  * This is a duplicate of `Monolog\Processor;\ProcessorInterface`, but we do not
  * explicitly use that because we want to only have the dependency for v1.0.0.
