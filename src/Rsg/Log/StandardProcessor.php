@@ -3,9 +3,7 @@
 namespace Rsg\Log;
 
 /**
- * Class: StandardProcessor
- *
- * Monolog Processer for RSG libraries
+ * Standard Monolog Processer for RSG libraries
  *
  * The StandardProcessor can be used by itself or be deocrated by another
  * processor.
