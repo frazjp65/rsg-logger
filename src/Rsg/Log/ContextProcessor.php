@@ -2,8 +2,6 @@
 
 namespace Rsg\Log;
 
-use Monolog\Processor\ProcessorInterface;
-
 /**
  * A decorator class used to copy data to a more useful place in the record.
  *
@@ -14,7 +12,7 @@ use Monolog\Processor\ProcessorInterface;
  * @final
  */
 final class ContextProcessor
-    implements ProcessorInterface
+    implements Processor
 {
     /**
      * @var ProcessorInterface
@@ -37,7 +35,7 @@ final class ContextProcessor
      * @param array              $keys_to_escalate The keys in the context that should be
      *                                             copied to the root record
      */
-    public function __construct( ProcessorInterface $processor, array $keys_to_escalate = [] )
+    public function __construct( Processor $processor, array $keys_to_escalate = [] )
     {
         $this->_processor = $processor;
 
