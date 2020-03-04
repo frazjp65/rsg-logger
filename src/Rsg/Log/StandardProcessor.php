@@ -13,29 +13,28 @@ namespace Rsg\Log;
  *
  * @final
  */
-final class StandardProcessor
-    implements Processor
+final class StandardProcessor implements Processor
 {
     /**
-     * _environment
+     * environment
      *
      * @var string
      */
-    private $_environment;
+    private $environment;
 
     /**
-     * _service
+     * service
      *
      * @var string
      */
-    private $_service;
+    private $service;
 
     /**
-     * _datetime_format
+     * datetime_format
      *
      * @var string
      */
-    private $_datetime_format;
+    private $datetime_format;
 
 
     /**
@@ -50,11 +49,10 @@ final class StandardProcessor
         $environment,
         $service,
         $datetime_format = 'Y-m-d\TH:i:s.uO'
-    )
-    {
-        $this->_environment     = $environment;
-        $this->_service         = $service;
-        $this->_datetime_format = $datetime_format;
+    ) {
+        $this->environment     = $environment;
+        $this->service         = $service;
+        $this->datetime_format = $datetime_format;
     }
 
 
@@ -62,15 +60,15 @@ final class StandardProcessor
      * @param array $record The record to be logged
      * @return array The array of data to be logged
      */
-    public function __invoke( array $record )
+    public function __invoke(array $record)
     {
         $altered_record = [
-            'env'     => $this->_environment,
-            'service' => $this->_service,
+            'env'     => $this->environment,
+            'service' => $this->service,
         ];
 
-        $record = $this->_handleSeverity( $record );
-        $record = $this->_handleDatetime( $record );
+        $record = $this->handleSeverity($record);
+        $record = $this->handleDatetime($record);
 
         return $record + $altered_record;
     }
@@ -82,12 +80,11 @@ final class StandardProcessor
      * @param array $record
      * @return array The updated record
      */
-    private function _handleSeverity( array $record )
+    private function handleSeverity(array $record)
     {
-        if ( isset( $record[ 'level_name' ] ) )
-        {
+        if (isset($record[ 'level_name' ])) {
             $record[ 'severity' ] = $record[ 'level_name' ];
-            unset( $record[ 'level_name' ] );
+            unset($record[ 'level_name' ]);
         }
 
         return $record;
@@ -100,15 +97,14 @@ final class StandardProcessor
      * @param array $record
      * @return array The updated record
      */
-    private function _handleDatetime( array $record )
+    private function handleDatetime(array $record)
     {
-        if ( isset( $record[ 'datetime' ] ) )
-        {
+        if (isset($record[ 'datetime' ])) {
             $record[ 'timestamp' ] = ( $record[ 'datetime' ] instanceof \DateTimeInterface )
-                ? $record[ 'datetime' ]->format( $this->_datetime_format )
+                ? $record[ 'datetime' ]->format($this->datetime_format)
                 : $record[ 'datetime' ];
 
-            unset( $record[ 'datetime' ] );
+            unset($record[ 'datetime' ]);
         }
 
         return $record;

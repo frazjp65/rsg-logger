@@ -11,18 +11,17 @@ namespace Rsg\Log;
  *
  * @final
  */
-final class ContextProcessor
-    implements Processor
+final class ContextProcessor implements Processor
 {
     /**
      * @var ProcessorInterface
      */
-    private $_processor;
+    private $processor;
 
     /**
      * @var array
      */
-    private $_keys_to_escalate = [
+    private $keys_to_escalate = [
         'quote_id',
         'contract_id',
         'user_id',
@@ -35,13 +34,12 @@ final class ContextProcessor
      * @param array              $keys_to_escalate The keys in the context that should be
      *                                             copied to the root record
      */
-    public function __construct( Processor $processor, array $keys_to_escalate = [] )
+    public function __construct(Processor $processor, array $keys_to_escalate = [])
     {
-        $this->_processor = $processor;
+        $this->processor = $processor;
 
-        if ( !empty( $keys_to_escalate ) )
-        {
-            $this->_keys_to_escalate = $keys_to_escalate;
+        if (!empty($keys_to_escalate)) {
+            $this->keys_to_escalate = $keys_to_escalate;
         }
     }
 
@@ -49,18 +47,16 @@ final class ContextProcessor
     /**
      * @{inheritdoc}
      */
-    public function __invoke( array $record )
+    public function __invoke(array $record)
     {
-        foreach ( $this->_keys_to_escalate as $key )
-        {
+        foreach ($this->keys_to_escalate as $key) {
             // do not overwrite an existing key
-            if ( isset( $record[ 'context' ][ $key ] ) && ! isset( $record[ $key ] ) )
-            {
+            if (isset($record[ 'context' ][ $key ]) && ! isset($record[ $key ])) {
                 $record[ $key ] = $record[ 'context' ][ $key ];
             }
         }
 
-        return $this->_processor
-            ->__invoke( $record );
+        return $this->processor
+            ->__invoke($record);
     }
 }
