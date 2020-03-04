@@ -15,40 +15,47 @@ class ContextProcessorTest extends \PHPUnit\Framework\TestCase
         $this->assertInstanceOf(\Rsg\Log\ContextProcessor::class, $sut);
     }
 
-
-    public function testFormatPassesRecordUp()
+    public function providerInvoke(): array
     {
-        $processor = $this->createMock(Processor::class);
-        $sut       = new Sut($processor);
-        $record    = [ 'foo' => 'bar ' ];
-        $return    = [ 'foo', 'baz' ];
-
-        $processor
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($record)
-            ->willReturn($return);
-
-        $this->assertEquals($return, $sut($record));
+        return [
+            'passes record up' => [
+                ['foo' => 'bar'],
+                ['foo' => 'bar'],
+            ],
+            'escalates default from context' => [
+                ['foo' => 'bar', 'context' => ['quote_id' => 1, 'contract_id' => 2]],
+                [
+                    'foo'         => 'bar',
+                    'quote_id'    => 1,
+                    'contract_id' => 2,
+                    'context'     => [],
+                ],
+            ],
+            'overwrites preserve' => [
+                ['foo' => 'bar', 'quote_id' => 2, 'context' => ['quote_id' => 1]],
+                [
+                    'foo'         => 'bar',
+                    'quote_id'    => 1,
+                    'context'     => [ '_quote_id' => 2 ],
+                ],
+            ],
+        ];
     }
 
 
-    public function testFormatEscalatesDefaultValuesFromSubArray()
+    /**
+     * @dataProvider providerInvoke
+     */
+    public function testInvoke(array $record, array $with_record)
     {
         $processor = $this->createMock(Processor::class);
         $sut       = new Sut($processor);
-        $record    = [ 'foo' => 'bar ', 'context' => [ 'quote_id' => 1, 'contract_id' => 2 ], ];
-        $return    = [ 'foo', 'baz' ];
+        $return    = ['foo', 'baz'];
 
         $processor
             ->expects($this->once())
             ->method('__invoke')
-            ->with(
-                $record + [
-                    'quote_id'    => $record[ 'context' ][ 'quote_id' ],
-                    'contract_id' => $record[ 'context' ][ 'contract_id' ],
-                ]
-            )
+            ->with($with_record)
             ->willReturn($return);
 
         $this->assertEquals($return, $sut($record));
@@ -58,35 +65,19 @@ class ContextProcessorTest extends \PHPUnit\Framework\TestCase
     public function testFormatEscalatesCustomValuesFromSubArray()
     {
         $processor = $this->createMock(Processor::class);
-        $sut       = new Sut($processor, [ 'foo' ]);
-        $record    = [ 'context' => [ 'quote_id' => 1, 'foo' => 'bar' ] ];
-        $return    = [ 'foo', 'baz' ];
+        $sut       = new Sut($processor, ['foo']);
+        $record    = ['context' => ['quote_id' => 1, 'foo' => 'bar']];
+        $return    = ['foo', 'baz'];
 
         $processor
             ->expects($this->once())
             ->method('__invoke')
             ->with(
-                $record + [
+                [
                     'foo' => 'bar',
+                    'context' => ['quote_id' => 1],
                 ]
             )
-            ->willReturn($return);
-
-        $this->assertEquals($return, $sut($record));
-    }
-
-
-    public function testFormatEscalationDoesNotOverwrite()
-    {
-        $processor = $this->createMock(Processor::class);
-        $sut       = new Sut($processor);
-        $record    = [ 'foo' => 'bar ', 'quote_id' => 2, 'context' => [ 'quote_id' => 1 ] ];
-        $return    = [ 'foo', 'baz' ];
-
-        $processor
-            ->expects($this->once())
-            ->method('__invoke')
-            ->with($record)
             ->willReturn($return);
 
         $this->assertEquals($return, $sut($record));

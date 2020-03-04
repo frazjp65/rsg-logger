@@ -30,10 +30,11 @@ class WebProcessorTest extends \PHPUnit\Framework\TestCase
         $processor = $this->getMockProcessor();
         $processor->expects($this->once())
             ->method('__invoke')
-            ->with($record);
+            ->with($record)
+            ->willReturn($record);
 
 
         $sut = new Sut($processor);
-        $sut($record);
+        $this->assertSame($record, $sut($record));
     }
 }

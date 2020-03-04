@@ -14,7 +14,7 @@ namespace Rsg\Log;
 final class ContextProcessor implements Processor
 {
     /**
-     * @var ProcessorInterface
+     * @var Processor
      */
     private $processor;
 
@@ -26,13 +26,14 @@ final class ContextProcessor implements Processor
         'contract_id',
         'user_id',
         'agent_code',
+        'service',
     ];
 
 
     /**
-     * @param ProcessorInterface $processor        The processor being decorated
-     * @param array              $keys_to_escalate The keys in the context that should be
-     *                                             copied to the root record
+     * @param Processor $processor        The processor being decorated
+     * @param array     $keys_to_escalate The keys in the context that should be
+     *                                      copied to the root record
      */
     public function __construct(Processor $processor, array $keys_to_escalate = [])
     {
@@ -45,18 +46,57 @@ final class ContextProcessor implements Processor
 
 
     /**
-     * @{inheritdoc}
+     * @inheritDoc
      */
     public function __invoke(array $record)
     {
         foreach ($this->keys_to_escalate as $key) {
-            // do not overwrite an existing key
-            if (isset($record[ 'context' ][ $key ]) && ! isset($record[ $key ])) {
-                $record[ $key ] = $record[ 'context' ][ $key ];
-            }
+            $record = $this->escalateKey($record, $key);
         }
 
         return $this->processor
             ->__invoke($record);
+    }
+
+
+    /**
+     * Escalate a key/value
+     *
+     * Check the context for a key and push the key and its value up to the
+     *   top-level of the log.
+     *
+     * @param array  $record The log record
+     * @param string $key    The key to escalate
+     * @return array The new log record
+     */
+    public function escalateKey(array $record, $key)
+    {
+        if (isset($record['context'][$key])) {
+            $record = $this->preserveKey($record, $key);
+            $record[$key] = $record['context'][$key];
+            unset($record['context'][$key]);
+        }
+
+        return $record;
+    }
+
+
+    /**
+     * Preserve a key/value
+     *
+     * Copy a top-level key/value into the record's context. The new key will be
+     *   preceded by an underscore.
+     *
+     * @param array  $record The log record
+     * @param string $key    The key to preserve
+     * @return array The new log record
+     */
+    public function preserveKey(array $record, $key)
+    {
+        if (isset($record[$key])) {
+            $record['context']['_' . $key] = $record[$key];
+        }
+
+        return $record;
     }
 }
