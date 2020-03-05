@@ -38,7 +38,7 @@ final class WebProcessor extends BaseProcessor implements Processor
      * @param array $record The record being logged
      * @return array the record to be logged
      */
-    public function __invoke(array $record): array
+    public function __invoke(array $record)
     {
         $record = parent::__invoke($record);
         return $this->processor->__invoke($record);
