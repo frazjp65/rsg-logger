@@ -2,17 +2,15 @@
 
 A collection of logging utilities that can be used by RSG.
 
-# Processors
+## Processors
 
-## StandardProcessor
-
-### Description
+### StandardProcessor
 
 This is the root processor. It does not decorate any other ProcessorInterfaces
 like the other ones in this library. It is used to add values that all records
 should contain.
 
-### Usage
+#### Usage
 
 ```yaml
 Rsg\Log\StandardProcessor:
@@ -20,12 +18,12 @@ Rsg\Log\StandardProcessor:
     arguments: [ '%env%', 'some-service' ]
 ```
 
-## WebProcessor
+### WebProcessor
 
 An adapter for Monolog's WebProcessor. It is used to add "extra" data for web
 requests. This also decorates any ProcessorInterface.
 
-### Usage
+#### Usage
 
 ```yaml
 Rsg\Log\StandardProcessor:
@@ -36,14 +34,14 @@ Rsg\Log\WebProcessor:
     arguments: [ '@Rsg\Log\StandardProcessor' ]
 ```
 
-## ContextProcessor
+### ContextProcessor
 
 Copies important data from the context to the root of the record. This also
 decorates any ProcessorInterface. The purpose is to allow us to do something
 like `$logger->info( 'some message', [ 'important_field' => 1 ] );` and be able
 to search "important_field=1" in our log aggregator.
 
-### Usage
+#### Usage
 
 ```yaml
 Rsg\Log\StandardProcessor:
@@ -63,7 +61,7 @@ Rsg\Log\StandardProcessor:
 Rsg\Log\ContextProcessor:
     tags: [ 'monolog.processor' ]
     arguments:
-        $processor: '@Rsg\Log\StandardProcessor' 
+        $processor: '@Rsg\Log\StandardProcessor'
         $keys_to_escalate:
             - foo
             - bar
@@ -71,7 +69,7 @@ Rsg\Log\ContextProcessor:
 
 ```
 
-# Recommended Settings
+## Recommended Settings
 
 The settings recommended for all RSG apps should include:
 

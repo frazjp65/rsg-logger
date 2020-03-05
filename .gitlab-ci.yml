@@ -18,6 +18,7 @@ variables:
                     --exclude tests
                     --exclude bin
                     --exclude var'
+    phpcs_standard: 'PSR12'
 
 stages:
     - build

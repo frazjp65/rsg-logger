@@ -2,7 +2,7 @@
 
 namespace Rsg\Log;
 
-use \Monolog\Processor\WebProcessor as BaseProcessor;
+use Monolog\Processor\WebProcessor as BaseProcessor;
 
 /**
  * Processor to add logging for web requests.
@@ -12,25 +12,23 @@ use \Monolog\Processor\WebProcessor as BaseProcessor;
  *
  * @final
  */
-final class WebProcessor
-    extends BaseProcessor
-    implements Processor
+final class WebProcessor extends BaseProcessor implements Processor
 {
     /**
-     * _processor
+     * processor
      *
      * @var Processor
      */
-    private $_processor;
+    private $processor;
 
 
     /**
      * @param Processor $processor The processor that this is decorating
      */
-    public function __construct( Processor $processor )
+    public function __construct(Processor $processor)
     {
         parent::__construct();
-        $this->_processor = $processor;
+        $this->processor = $processor;
     }
 
 
@@ -40,9 +38,9 @@ final class WebProcessor
      * @param array $record The record being logged
      * @return array the record to be logged
      */
-    public function __invoke( array $record )
+    public function __invoke(array $record): array
     {
-        $record = parent::__invoke( $record );
-        return $this->_processor->__invoke( $record );
+        $record = parent::__invoke($record);
+        return $this->processor->__invoke($record);
     }
 }
