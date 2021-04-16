@@ -27,6 +27,9 @@ final class ContextProcessor implements Processor
         'user_id',
         'agent_code',
         'service',
+        'trace_id',
+        'span_id',
+        'indication_id',
     ];
 
 
